@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: challenge_postgres
+    environment:
+      POSTGRES_DB: challenge
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - challenge_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  flyway:
+    image: flyway/flyway:9.22
+    container_name: challenge_flyway
+    command: -url=jdbc:postgresql://postgres:5432/challenge -user=postgres -password=postgres -connectRetries=60 migrate
+    volumes:
+      - ./migrations:/flyway/sql
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - challenge_network
+
+volumes:
+  postgres_data:
+
+networks:
+  challenge_network:
+    driver: bridge

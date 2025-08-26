@@ -1,0 +1,5 @@
+data_negocio,codigo_instrumento,preco_negocio,quantidade_negociada,hora_fechamento
+2025-08-26,PETR4,32.50,1000,2025-08-26 17:30:00
+2025-08-26,VALE3,71.25,500,2025-08-26 17:30:00
+2025-08-26,ITUB4,28.90,750,2025-08-26 17:30:00
+2025-08-26,BBDC4,15.75,1200,2025-08-26 17:30:00
