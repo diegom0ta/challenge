@@ -1,67 +1,50 @@
 # Challenge
 
-This project includes a Go application with PostgreSQL database and Flyway migrations.
+### Arquitetura
 
-## Database Setup
+As duas aplicações vivem no mesmo repositório separadas por camadas como um monólito modular. Na camada ```cmd``` vivem os arquivos de entrada de cada aplicação.
 
-The project uses Docker Compose to set up PostgreSQL and run Flyway migrations.
+### Prerequisitos
 
-### Prerequisites
+- Docker e Docker Compose instalados
+- Make
 
-- Docker and Docker Compose installed
-- Make (optional, for convenience commands)
+### Para executar os containers
 
-### Getting Started
-
-1. **Start the database and run migrations:**
+**Iniciar o banco de dados e rodar as migrações:**
    ```bash
    make up
    ```
-   Or manually:
+## Importante
+1. Primeiro deve-se rodar a CLI para fazer a ingestão dos dados. Depois rodar o serviço de API para consulta
+2. Os arquivos da B3 são baixados com .txt e é preciso fazer alterações de caracteres para que eles possam ser ingeridos pela CLI:
    ```bash
-   docker-compose up -d
+   mv NOME-DO-ARQUIVO-B3.txt raiz/do/projeto/foo-bar.csv
    ```
-
-2. **View logs:**
+   Em seguida fazer as alterações de caracteres via Vim:
    ```bash
-   make logs
+   vim nome-do-arquivo.csv
    ```
+   No buffer do vim, escrever comando:
+   ``` :%! tr "," "." ```
+   para substituir virgulas por pontos nos numerais
 
-3. **Connect to PostgreSQL:**
-   ```bash
-   make psql
-   ```
+   ``` :%! tr ";" "," ```
+   para substituir ponto-e-vírgulas por vírgulas
+   
+   Depois salvar o arquivo e sair do Vim   
 
-4. **Stop services:**
-   ```bash
-   make down
-   ```
+### Para executar a CLI
 
-5. **Clean up (removes volumes):**
-   ```bash
-   make clean
-   ```
+Na raiz do projeto:
 
-### Database Schema
-
-The B3 table structure:
-- `id`: Serial primary key
-- `data_negocio`: Timestamp of the trading date
-- `codigo_instrumento`: Instrument code (VARCHAR 50)
-- `preco_negocio`: Trading price (DECIMAL 15,2)
-- `quantidade_negociada`: Quantity traded (INTEGER)
-- `hora_fechamento`: Closing time (TIMESTAMP)
-- `created_at`: Record creation timestamp
-- `updated_at`: Record update timestamp
-
-### Environment Variables
-
-Copy `.env.example` to `.env` and modify as needed:
 ```bash
-cp .env.example .env
+go run cmd/cli/main.go "<nome-do-arquivo.csv>"
 ```
+### Para excutar o serviço
 
-### Migration Files
+Na raiz do projeto:
 
-Migration files are located in the `migrations/` directory and follow Flyway naming convention:
-- `V1__Create_b3_table.sql` - Initial table creation
+```bash
+go run cmd/api/main.go
+``
