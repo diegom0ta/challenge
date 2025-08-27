@@ -149,17 +149,22 @@ func (c *CLI) processCSVData(records [][]string) error {
 
 // showHelp displays help information
 func (c *CLI) showHelp() {
-	fmt.Println("Challenge CLI - CSV File Processor")
+	fmt.Println("Challenge CLI - B3 CSV File Processor")
 	fmt.Println("Usage: challenge <csv-file>")
 	fmt.Println()
 	fmt.Println("Arguments:")
-	fmt.Println("  <csv-file>           Path to a local CSV file to process")
+	fmt.Println("  <csv-file>           Path to a local B3 CSV file to process")
 	fmt.Println("  help, --help, -h     Show this help message")
 	fmt.Println("  version, --version, -v Show version information")
 	fmt.Println()
+	fmt.Println("Expected CSV format (11 columns):")
+	fmt.Println("  data_referencia,acao_atualizacao,data_negocio,codigo_instrumento,")
+	fmt.Println("  preco_negocio,quantidade_negociada,hora_fechamento,codigo_identificador_negocio,")
+	fmt.Println("  tipo_sessao_pregao,codigo_participante_comprador,codigo_participante_vendedor")
+	fmt.Println()
 	fmt.Println("Examples:")
-	fmt.Println("  challenge data.csv")
-	fmt.Println("  challenge /path/to/b3_data.csv")
+	fmt.Println("  challenge b3_data.csv")
+	fmt.Println("  challenge /path/to/bovespa_data.csv")
 }
 
 // showVersion displays version information
