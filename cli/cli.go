@@ -12,19 +12,16 @@ import (
 	"challenge/repository"
 )
 
-// CLI represents the command line interface
 type CLI struct {
 	args []string
 }
 
-// NewCLI creates a new CLI instance
 func NewCLI() *CLI {
 	return &CLI{
-		args: os.Args[1:], // Skip program name
+		args: os.Args[1:],
 	}
 }
 
-// Run executes the CLI with the provided arguments
 func (c *CLI) Run() error {
 	if len(c.args) == 0 {
 		return fmt.Errorf("usage: %s <csv-file>\nPlease provide a CSV file path as argument", os.Args[0])
@@ -38,13 +35,10 @@ func (c *CLI) Run() error {
 
 	fmt.Printf("Processing CSV file: %s\n", csvFile)
 
-	// Process the CSV file
 	return c.processCSVFile(csvFile)
 }
 
-// processCSVFile handles the processing of CSV files
 func (c *CLI) processCSVFile(filePath string) error {
-	// Check if it's a help request
 	if filePath == "help" || filePath == "--help" || filePath == "-h" {
 		c.showHelp()
 		return nil
@@ -55,28 +49,23 @@ func (c *CLI) processCSVFile(filePath string) error {
 		return nil
 	}
 
-	// Validate file exists
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
 		return fmt.Errorf("CSV file does not exist: %s", filePath)
 	}
 
-	// Validate file extension
 	ext := strings.ToLower(filepath.Ext(filePath))
 	if ext != ".csv" {
 		return fmt.Errorf("file must be a CSV file (*.csv), got: %s", ext)
 	}
 
-	// Open and read the CSV file
 	file, err := os.Open(filePath)
 	if err != nil {
 		return fmt.Errorf("failed to open CSV file: %v", err)
 	}
 	defer file.Close()
 
-	// Create CSV reader
 	reader := csv.NewReader(file)
 
-	// Read all records
 	records, err := reader.ReadAll()
 	if err != nil {
 		return fmt.Errorf("failed to read CSV file: %v", err)
@@ -89,37 +78,30 @@ func (c *CLI) processCSVFile(filePath string) error {
 	fmt.Printf("Successfully loaded CSV file: %s\n", filePath)
 	fmt.Printf("Found %d rows\n", len(records))
 
-	// Show headers if available
 	if len(records) > 0 {
 		fmt.Printf("Headers: %v\n", records[0])
 	}
 
-	// Process the CSV data
 	return c.processCSVData(records)
 }
 
-// processCSVData processes the CSV records
 func (c *CLI) processCSVData(records [][]string) error {
 	fmt.Printf("Processing %d records...\n", len(records))
 
-	// Skip header row if it exists
 	dataRows := records
 	if len(records) > 1 {
 		dataRows = records[1:]
 		fmt.Printf("Processing %d data rows (excluding header)...\n", len(dataRows))
 	}
 
-	// Connect to database
 	database, err := db.NewConnection()
 	if err != nil {
 		return fmt.Errorf("failed to connect to database: %v", err)
 	}
 	defer database.Close()
 
-	// Create B3 repository
 	b3Repo := repository.NewB3Repository(database.GetConnection())
 
-	// Parse CSV rows to B3 models
 	var b3Records []*models.B3
 	for i, row := range dataRows {
 		b3Record, err := repository.ParseCSVRowToB3(row)
@@ -137,7 +119,6 @@ func (c *CLI) processCSVData(records [][]string) error {
 
 	fmt.Printf("Successfully parsed %d valid records\n", len(b3Records))
 
-	// Insert records into database
 	err = b3Repo.InsertBatch(b3Records)
 	if err != nil {
 		return fmt.Errorf("failed to insert records: %v", err)
@@ -147,7 +128,6 @@ func (c *CLI) processCSVData(records [][]string) error {
 	return nil
 }
 
-// showHelp displays help information
 func (c *CLI) showHelp() {
 	fmt.Println("Challenge CLI - B3 CSV File Processor")
 	fmt.Println("Usage: challenge <csv-file>")
@@ -167,7 +147,6 @@ func (c *CLI) showHelp() {
 	fmt.Println("  challenge /path/to/bovespa_data.csv")
 }
 
-// showVersion displays version information
 func (c *CLI) showVersion() {
 	fmt.Println("Challenge CLI - CSV Processor v1.0.0")
 }

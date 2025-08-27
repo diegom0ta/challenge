@@ -1,4 +1,4 @@
-.PHONY: up down migrate clean logs
+.PHONY: up down migrate clean logs run-api run-cli build test
 
 # Start all services
 up:
@@ -35,3 +35,24 @@ psql:
 # Restart services
 restart:
 	docker compose restart
+
+# Run API server
+run-api:
+	go run cmd/api/main.go
+
+# Run CLI with sample data
+run-cli:
+	go run cmd/cli/main.go sample_data.csv
+
+# Build all binaries
+build:
+	go build -o bin/api cmd/api/main.go
+	go build -o bin/cli cmd/cli/main.go
+
+# Run tests
+test:
+	go test ./...
+
+# Install dependencies
+deps:
+	go mod tidy

@@ -1,4 +1,3 @@
--- Create B3 table
 CREATE TABLE IF NOT EXISTS b3 (
     id SERIAL PRIMARY KEY,
     data_referencia TIMESTAMP,
@@ -16,6 +15,5 @@ CREATE TABLE IF NOT EXISTS b3 (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create indexes for better query performance
 CREATE INDEX IF NOT EXISTS idx_b3_data_negocio ON b3(data_negocio);
 CREATE INDEX IF NOT EXISTS idx_b3_codigo_instrumento ON b3(codigo_instrumento);
